@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Weekly Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+ :root {
+   --cream: #FAF7F2;
+   --warm-white: #FFFDF9;
+   --ink: #1C1917;
+   --ink-light: #57534E;
+   --ink-faint: #A8A29E;
+   --sage: #7C9A7E;
+   --sage-light: #D4E6D5;
+   --blush: #E8C4B8;
+   --blush-deep: #C4826E;
+   --gold: #C9A84C;
+   --gold-light: #F0DFA8;
+   --border: #E5DDD5;
+ }
+- { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+background: var(–cream);
+color: var(–ink);
+font-family: ‘DM Sans’, sans-serif;
+min-height: 100vh;
+padding: 40px 20px 80px;
+}
+header {
+text-align: center;
+margin-bottom: 48px;
+}
+header h1 {
+font-family: ‘DM Serif Display’, serif;
+font-size: clamp(2rem, 5vw, 3.2rem);
+color: var(–ink);
+letter-spacing: -0.02em;
+line-height: 1.1;
+}
+header h1 em {
+font-style: italic;
+color: var(–blush-deep);
+}
+.week-label {
+font-size: 0.8rem;
+font-weight: 500;
+letter-spacing: 0.12em;
+text-transform: uppercase;
+color: var(–ink-faint);
+margin-top: 8px;
+}
+.week-nav {
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 16px;
+margin-top: 12px;
+}
+.week-nav button {
+background: none;
+border: 1.5px solid var(–border);
+color: var(–ink-light);
+width: 32px; height: 32px;
+border-radius: 50%;
+cursor: pointer;
+font-size: 1rem;
+display: flex; align-items: center; justify-content: center;
+transition: all 0.2s;
+}
+.week-nav button:hover { border-color: var(–sage); color: var(–sage); }
+#week-range {
+font-size: 0.85rem;
+color: var(–ink-light);
+font-weight: 500;
+min-width: 160px;
+text-align: center;
+}
+.progress-bar-wrap {
+max-width: 480px;
+margin: 24px auto 0;
+background: var(–border);
+border-radius: 99px;
+height: 6px;
+overflow: hidden;
+}
+.progress-bar-fill {
+height: 100%;
+background: linear-gradient(90deg, var(–sage), var(–gold));
+border-radius: 99px;
+transition: width 0.5s cubic-bezier(.4,0,.2,1);
+}
+.progress-label {
+font-size: 0.75rem;
+color: var(–ink-faint);
+text-align: center;
+margin-top: 6px;
+}
+.tracker-grid {
+display: grid;
+grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+gap: 20px;
+max-width: 1100px;
+margin: 0 auto;
+}
+.day-card {
+background: var(–warm-white);
+border: 1.5px solid var(–border);
+border-radius: 20px;
+padding: 24px;
+transition: box-shadow 0.2s;
+position: relative;
+overflow: hidden;
+}
+.day-card::before {
+content: ‘’;
+position: absolute;
+top: 0; left: 0; right: 0;
+height: 3px;
+background: var(–border);
+transition: background 0.3s;
+}
+.day-card.complete::before {
+background: linear-gradient(90deg, var(–sage), var(–gold));
+}
+.day-card:hover { box-shadow: 0 8px 30px rgba(0,0,0,0.07); }
+.day-header {
+display: flex;
+align-items: flex-start;
+justify-content: space-between;
+margin-bottom: 16px;
+}
+.day-name {
+font-family: ‘DM Serif Display’, serif;
+font-size: 1.4rem;
+color: var(–ink);
+line-height: 1;
+}
+.day-date {
+font-size: 0.75rem;
+color: var(–ink-faint);
+margin-top: 3px;
+font-weight: 400;
+}
+.day-badge {
+font-size: 0.7rem;
+font-weight: 500;
+letter-spacing: 0.08em;
+text-transform: uppercase;
+padding: 3px 10px;
+border-radius: 99px;
+background: var(–sage-light);
+color: var(–sage);
+opacity: 0;
+transition: opacity 0.3s;
+}
+.day-card.complete .day-badge { opacity: 1; }
+.workout-section {
+background: var(–cream);
+border-radius: 12px;
+padding: 12px 14px;
+margin-bottom: 14px;
+}
+.section-label {
+font-size: 0.65rem;
+font-weight: 500;
+letter-spacing: 0.12em;
+text-transform: uppercase;
+color: var(–ink-faint);
+margin-bottom: 6px;
+}
+.workout-text {
+font-size: 0.88rem;
+color: var(–ink-light);
+line-height: 1.5;
+font-style: italic;
+font-family: ‘DM Serif Display’, serif;
+}
+.workout-text.rest {
+color: var(–ink-faint);
+}
+.habits {
+display: flex;
+flex-direction: column;
+gap: 8px;
+}
+.habit-item {
+display: flex;
+align-items: center;
+gap: 12px;
+padding: 10px 12px;
+border-radius: 10px;
+cursor: pointer;
+transition: background 0.15s;
+user-select: none;
+border: 1.5px solid transparent;
+}
+.habit-item:hover { background: var(–cream); }
+.habit-item.checked {
+background: var(–sage-light);
+border-color: var(–sage);
+}
+.habit-item.checked .habit-label { color: var(–sage); }
+.habit-checkbox {
+width: 20px; height: 20px;
+border-radius: 6px;
+border: 1.5px solid var(–border);
+background: white;
+display: flex; align-items: center; justify-content: center;
+flex-shrink: 0;
+transition: all 0.2s;
+font-size: 0.75rem;
+}
+.habit-item.checked .habit-checkbox {
+background: var(–sage);
+border-color: var(–sage);
+color: white;
+}
+/* Workout habit style */
+.habit-item.workout-habit.checked {
+background: var(–gold-light);
+border-color: var(–gold);
+}
+.habit-item.workout-habit.checked .habit-label { color: #8a6a1a; }
+.habit-item.workout-habit.checked .habit-checkbox {
+background: var(–gold);
+border-color: var(–gold);
+color: white;
+}
+.habit-label {
+font-size: 0.85rem;
+color: var(–ink);
+font-weight: 400;
+flex: 1;
+}
+.habit-icon {
+font-size: 1rem;
+width: 20px;
+text-align: center;
+flex-shrink: 0;
+}
+/* Sunday rest card */
+.rest-card {
+background: var(–warm-white);
+border: 1.5px dashed var(–border);
+border-radius: 20px;
+padding: 24px;
+display: flex;
+align-items: center;
+justify-content: center;
+flex-direction: column;
+gap: 8px;
+min-height: 120px;
+text-align: center;
+}
+.rest-card .day-name {
+font-family: ‘DM Serif Display’, serif;
+font-size: 1.4rem;
+color: var(–ink-faint);
+}
+.rest-card p {
+font-size: 0.8rem;
+color: var(–ink-faint);
+font-style: italic;
+}
+@media (max-width: 640px) {
+.tracker-grid { grid-template-columns: 1fr; }
+body { padding: 24px 16px 60px; }
+}
+.confetti-pop {
+animation: pop 0.3s cubic-bezier(.4,2,.6,1);
+}
+@keyframes pop {
+0% { transform: scale(0.85); }
+100% { transform: scale(1); }
+}
+</style>
+</head>
+<body>
+<header>
+<h1>Weekly <em>Ritual</em> Tracker</h1>
+<div class="week-label">Your habits &amp; workouts</div>
+<div class="week-nav">
+<button id="prev-week" title="Previous week">‹</button>
+<span id="week-range"></span>
+<button id="next-week" title="Next week">›</button>
+</div>
+<div class="progress-bar-wrap" style="margin-top:16px">
+<div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
+</div>
+<div class="progress-label" id="progress-label">0 of 0 habits completed this week</div>
+</header>
+<div class="tracker-grid" id="tracker-grid"></div>
+<script>
+ // ── Workout schedule from photo ──────────────────────────────────────
+ const WORKOUTS = {
+   Mon: 'Upper Body / Core + 6PM Yoga',
+   Tue: 'Intervals 4+ × 400 @ 7:45–8:00\nGlutes / Core',
+   Wed: '7AM Yoga\nEasy Miles (4–5mi) + Strides',
+   Thu: '7AM Core\nTempo 20–40min @ 9:00',
+   Fri: 'Easy Miles (3–4mi)\nCore',
+   Sat: 'Long Run (8–10mi)',
+   Sun: null,
+ };
+ const DAYS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+ const DAY_NAMES_FULL = { Mon:'Monday', Tue:'Tuesday', Wed:'Wednesday', Thu:'Thursday', Fri:'Friday', Sat:'Saturday', Sun:'Sunday' };
+ const HABITS = [
+   { id: 'workout',  label: 'Daily Workout',           icon: '🏃',  type: 'workout' },
+   { id: 'journal',  label: 'Morning Journal Pages',   icon: '📝',  type: 'normal'  },
+   { id: 'floss',    label: 'Evening Floss',            icon: '🦷',  type: 'normal'  },
+   { id: 'serum',    label: 'Hair Serum',               icon: '✨',  type: 'normal'  },
+   { id: 'vitamins', label: 'Evening Vitamins',         icon: '💊',  type: 'normal'  },
+ ];
+ // ── State ────────────────────────────────────────────────────────────
+ let weekOffset = 0; // 0 = current week
+ function getWeekStart(offset = 0) {
+   const now = new Date();
+   const day = now.getDay(); // 0=Sun, 1=Mon...
+   const monday = new Date(now);
+   monday.setDate(now.getDate() - ((day + 6) % 7) + offset * 7);
+   monday.setHours(0, 0, 0, 0);
+   return monday;
+ }
+ function getWeekKey(offset = 0) {
+   const d = getWeekStart(offset);
+   return `week-${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+ }
+ function loadData(weekKey) {
+   try {
+     return JSON.parse(localStorage.getItem(weekKey) || '{}');
+   } catch { return {}; }
+ }
+ function saveData(weekKey, data) {
+   localStorage.setItem(weekKey, JSON.stringify(data));
+ }
+ function getDayDate(weekStart, dayIndex) {
+   const d = new Date(weekStart);
+   d.setDate(weekStart.getDate() + dayIndex);
+   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+ }
+ function updateProgress(data) {
+   // Sunday has no workout habit
+   const totalHabits = DAYS.reduce((sum, d) => sum + (d === 'Sun' ? 0 : HABITS.length), 0);
+   const done = Object.values(data).reduce((sum, dayObj) => sum + Object.values(dayObj).filter(Boolean).length, 0);
+   const pct = totalHabits > 0 ? Math.round((done / totalHabits) * 100) : 0;
+   document.getElementById('progress-fill').style.width = pct + '%';
+   document.getElementById('progress-label').textContent = `${done} of ${totalHabits} habits completed this week`;
+ }
+ function updateWeekRange() {
+   const ws = getWeekStart(weekOffset);
+   const we = new Date(ws); we.setDate(ws.getDate() + 6);
+   const fmt = d => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+   document.getElementById('week-range').textContent = `${fmt(ws)} – ${fmt(we)}`;
+ }
+ function render() {
+   const weekKey = getWeekKey(weekOffset);
+   const weekStart = getWeekStart(weekOffset);
+   const data = loadData(weekKey);
+   updateWeekRange();
+   const grid = document.getElementById('tracker-grid');
+   grid.innerHTML = '';
+   DAYS.forEach((dayShort, di) => {
+     if (dayShort === 'Sun') {
+       const restCard = document.createElement('div');
+       restCard.className = 'rest-card';
+       restCard.innerHTML = `
+<div class="day-name">Sunday</div>
+<p>Rest &amp; recover ✦ you earned it</p>
+       `;
+       grid.appendChild(restCard);
+       return;
+     }
+     const dayData = data[dayShort] || {};
+     const allDone = HABITS.every(h => dayData[h.id]);
+     const card = document.createElement('div');
+     card.className = 'day-card' + (allDone ? ' complete' : '');
+     const workout = WORKOUTS[dayShort];
+     const workoutHTML = workout
+       ? workout.split('\n').map(l => `<span>${l}</span>`).join('<br>')
+       : '';
+     card.innerHTML = `
+<div class="day-header">
+<div>
+<div class="day-name">${DAY_NAMES_FULL[dayShort]}</div>
+<div class="day-date">${getDayDate(weekStart, di)}</div>
+</div>
+<div class="day-badge">✓ Done</div>
+</div>
+       ${workout ? `
+<div class="workout-section">
+<div class="section-label">Today's Workout</div>
+<div class="workout-text">${workoutHTML}</div>
+</div>` : ''}
+<div class="habits" id="habits-${dayShort}"></div>
+     `;
+     grid.appendChild(card);
+     const habitsEl = card.querySelector(`#habits-${dayShort}`);
+     HABITS.forEach(habit => {
+       const checked = !!dayData[habit.id];
+       const item = document.createElement('div');
+       item.className = `habit-item${habit.type === 'workout' ? ' workout-habit' : ''}${checked ? ' checked' : ''}`;
+       item.innerHTML = `
+<div class="habit-checkbox">${checked ? '✓' : ''}</div>
+<span class="habit-icon">${habit.icon}</span>
+<span class="habit-label">${habit.label}</span>
+       `;
+       item.addEventListener('click', () => {
+         const wk = getWeekKey(weekOffset);
+         const d = loadData(wk);
+         if (!d[dayShort]) d[dayShort] = {};
+         d[dayShort][habit.id] = !d[dayShort][habit.id];
+         saveData(wk, d);
+         item.classList.toggle('checked', d[dayShort][habit.id]);
+         item.querySelector('.habit-checkbox').textContent = d[dayShort][habit.id] ? '✓' : '';
+         item.classList.add('confetti-pop');
+         item.addEventListener('animationend', () => item.classList.remove('confetti-pop'), { once: true });
+         const allNowDone = HABITS.every(h => d[dayShort][h.id]);
+         card.classList.toggle('complete', allNowDone);
+         updateProgress(d);
+       });
+       habitsEl.appendChild(item);
+     });
+   });
+   updateProgress(data);
+ }
+ document.getElementById('prev-week').addEventListener('click', () => { weekOffset--; render(); });
+ document.getElementById('next-week').addEventListener('click', () => { weekOffset++; render(); });
+ render();
+</script>
+</body>
+</html>
