@@ -210,7 +210,7 @@ background: white;
 display: flex; align-items: center; justify-content: center;
 flex-shrink: 0;
 transition: all 0.2s;
-font-size: 0.75rem;
+font-size: 0.95rem;
 }
 .habit-item.checked .habit-checkbox {
 background: var(–sage);
@@ -401,7 +401,7 @@ animation: pop 0.3s cubic-bezier(.4,2,.6,1);
        const item = document.createElement('div');
        item.className = `habit-item${habit.type === 'workout' ? ' workout-habit' : ''}${checked ? ' checked' : ''}`;
        item.innerHTML = `
-<div class="habit-checkbox">${checked ? '✓' : ''}</div>
+<div class="habit-checkbox">${checked ? '✔' : ''}</div>
 <span class="habit-icon">${habit.icon}</span>
 <span class="habit-label">${habit.label}</span>
        `;
@@ -412,7 +412,7 @@ animation: pop 0.3s cubic-bezier(.4,2,.6,1);
          d[dayShort][habit.id] = !d[dayShort][habit.id];
          saveData(wk, d);
          item.classList.toggle('checked', d[dayShort][habit.id]);
-         item.querySelector('.habit-checkbox').textContent = d[dayShort][habit.id] ? '✓' : '';
+         item.querySelector('.habit-checkbox').textContent = d[dayShort][habit.id] ? '✔' : '';
          item.classList.add('confetti-pop');
          item.addEventListener('animationend', () => item.classList.remove('confetti-pop'), { once: true });
          const allNowDone = HABITS.every(h => d[dayShort][h.id]);
